@@ -1,87 +1,142 @@
-graph = {};
-config = {yMax : 40, xMax : 10, data : [], width : 500, height : 300};
+master = {};
 
-graph.init = function (config) {
+/*
+config example:
 
-	yMax = config.yMax;
-	xMax = config.xMax;
-	data = config.data;
-	// n = domain max for y axis
-	graph.n = yMax;
-	graph.random = d3.random.normal(xMax/2, .2);
-	d3.range(graph.n);
+config = {yMax : 40, xMax : 10, data : [], width : 500, height : 300, id : 0};
+*/
+master.init = function (config) {
 
-	graph.data = data;
-	// if (data === undefined) {
-	// 	graph.data = d3.range(graph.n).map(graph.random);
-	// }
+    id = config.id;
 
-	graph.margin = {top: 20, right: 20, bottom: 20, left: 40};
-	
-	graph.width = config.width === undefined ? 500 : config.width;
-	graph.height = config.height === undefined ? 300 : config.height;
+    master[id] = {};
 
-	graph.x = d3.scale.linear()
-	.domain([0, graph.n - 1])
-	.range([0, graph.width]);
+    yMax = config.yMax;
+    xMax = config.xMax;
 
-	graph.y = d3.scale.linear()
-	.domain([xMax, 0])
-	.range([graph.height, 0]);
+    var xAxisMin = 0, xAxisMax = yMax;
+    data = config.data;
+    // n = domain max for y axis
+    master[id].n = yMax;
+    master[id].random = d3.random.normal(xMax/2, .2);
+    d3.range(master[id].n);
 
-	graph.line = d3.svg.line()
-	.x(function(d, i) { return graph.x(i); })
-	.y(function(d, i) { return graph.y(d); });
+    master[id].data = data;
+    // if (data === undefined) {
+    //     master[id].data = d3.range(master[id].n).map(master[id].random);
+    // }
 
-	graph.svg = d3.select("body").append("svg")
-	.attr("width", 300 + graph.margin.left + graph.margin.right)
-	.attr("height", graph.width + graph.margin.top + graph.margin.bottom)
-	.append("g")
-	.attr("transform", "translate(" + graph.margin.left + "," + graph.width + "), rotate(-90)");
+    master[id].margin = {top: 20, right: 20, bottom: 20, left: 40};
+    
+    master[id].width = config.width === undefined ? 500 : config.width;
+    master[id].height = config.height === undefined ? 300 : config.height;
 
-	graph.svg.append("defs").append("clipPath")
-	.attr("id", "clip")
-	.append("rect")
-	.attr("width", graph.width)
-	.attr("height", graph.height);
+    master[id].x = d3.scale.linear()
+    .domain([0, master[id].n - 1])
+    .range([0, master[id].width]);
 
-	graph.svg.append("g")
-	.attr("class", "x axis")
-	.attr("transform", "translate(0,0)")
-	.call(d3.svg.axis().scale(graph.x).orient("top"));
+    master[id].y = d3.scale.linear()
+    .domain([xMax, 0])
+    .range([master[id].height, 0]);
 
-	graph.svg.append("g")
-	.attr("class", "y axis")
-	.call(d3.svg.axis().scale(graph.y).orient("left"));
+    master[id].line = d3.svg.line()
+    .x(function(d, i) { return master[id].x(i); })
+    .y(function(d, i) { return master[id].y(d); });
 
-	graph.path = graph.svg.append("g")
-	.attr("clip-path", "url(#clip)")
-	.append("path")
-	.datum(graph.data)
-	.attr("class", "line")
-	.attr("d", graph.line);
+    master[id].svg = d3.select("body").append("svg").attr("id", id)
+    .attr("width", 300 + master[id].margin.left + master[id].margin.right)
+    .attr("height", master[id].width + master[id].margin.top + master[id].margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + master[id].margin.left + "," + master[id].width + "), rotate(-90)");
 
-	// tick();
-	graph.tick = function (val) {
+    master[id].svg.append("defs").append("clipPath")
+    .attr("id", "clip")
+    .append("rect")
+    .attr("width", master[id].width)
+    .attr("height", master[id].height);
 
-	// push a new data point onto the back
-	// data.push(random());
-	graph.data.push(val);
+    master[id].svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0,0)")
+    .call(d3.svg.axis().scale(master[id].x).orient("top"))
+    .selectAll("text")
+    .style("text-anchor", "end")
+    .attr("dx", "-.8em")
+    .attr("dy", "1.2em")
+    .attr("transform", function(d) {
+    return "rotate(90)" 
+    });
 
-	// redraw the line, and slide it to the left
-	graph.path
-	.attr("d", graph.line)
-	.attr("transform", null)
-	.transition()
-	.duration(250)
-	.ease("linear")
-	.attr("transform", "translate(" + graph.x(-2) + ", 0)");
-	// .each("end", tick);
+    master[id].svg.append("g")
+    .attr("class", "y axis")
+    .call(d3.svg.axis().scale(master[id].y).orient("left"))
+    .selectAll("text")
+    .style("text-anchor", "end")
+    .attr("dx", "1.3em")
+    .attr("dy", "1.5em")
+    .attr("transform", function(d) {
+    return "rotate(90)" 
+    });
 
-	// pop the old data point off the front
-	if (graph.data.length >= graph.n + 1) {
-		graph.data.shift();
-	}
+    master[id].path = master[id].svg.append("g")
+    .attr("clip-path", "url(#clip)")
+    .append("path")
+    .datum(master[id].data)
+    .attr("class", "line")
+    .attr("d", master[id].line);
 
-	}
+    // tick();
+    master[id].tick = function (val) {
+
+    // push a new data point onto the back
+    // data.push(random());
+    master[id].data.push(val);
+
+    // redraw the line, and slide it to the left
+    master[id].path
+    .attr("d", master[id].line)
+    .attr("transform", null)
+    .transition()
+    .duration(250)
+    .ease("linear")
+    .attr("transform", "translate(" + master[id].x(-0.1) + ", 0)");
+    // .each("end", tick);
+
+    // pop the old data point off the front
+    if (master[id].data.length >= master[id].n + 1) {
+                // redraw the line, and slide it to the left
+                master[id].path
+                .attr("d", master[id].line)
+                .attr("transform", null)
+                .transition()
+                .duration(250)
+                .ease("linear")
+                .attr("transform", "translate(" + master[id].x(-0.1) + ", 0)");
+                // .each("end", tick);
+                xAxisMin += 1;
+                xAxisMax += 1;
+                
+                //redraws xAxis to increase
+                master[id].svg.selectAll("g.x.axis")
+                .call(d3.svg.axis().scale(
+                  d3.scale.linear()
+                  .domain([xAxisMin, xAxisMax - 1])
+                  .range([0, master[id].width]))
+                .orient("top"))
+                .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", "1.2em")
+                .attr("transform", function(d) {
+                   return "rotate(90)" 
+                   });
+
+        master[id].data.shift();
+    }
+
+    }
+}
+
+master.tick = function (val, id) {
+    master[id].tick(val);
 }
