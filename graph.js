@@ -85,58 +85,104 @@ master.init = function (config) {
     .attr("class", "line")
     .attr("d", master[id].line);
 
-    // tick();
+    // Used to update the most recently created plot;
     master[id].tick = function (val) {
 
-    // push a new data point onto the back
-    // data.push(random());
-    master[id].data.push(val);
+		// push a new data point onto the back
+		// data.push(random());
+		master[id].data.push(val);
 
-    // redraw the line, and slide it to the left
-    master[id].path
-    .attr("d", master[id].line)
-    .attr("transform", null)
-    .transition()
-    .duration(250)
-    .ease("linear")
-    .attr("transform", "translate(" + master[id].x(-0.1) + ", 0)");
-    // .each("end", tick);
+		// redraw the line, and slide it to the left
+		master[id].path
+		.attr("d", master[id].line)
+		.attr("transform", null)
+		.transition()
+		.duration(250)
+		.ease("linear")
+		.attr("transform", "translate(" + master[id].x(-0.1) + ", 0)");
+		// .each("end", tick);
 
-    // pop the old data point off the front
-    if (master[id].data.length >= master[id].n + 1) {
-                // redraw the line, and slide it to the left
-                master[id].path
-                .attr("d", master[id].line)
-                .attr("transform", null)
-                .transition()
-                .duration(250)
-                .ease("linear")
-                .attr("transform", "translate(" + master[id].x(-0.1) + ", 0)");
-                // .each("end", tick);
-                xAxisMin += 1;
-                xAxisMax += 1;
-                
-                //redraws xAxis to increase
-                master[id].svg.selectAll("g.x.axis")
-                .call(d3.svg.axis().scale(
-                  d3.scale.linear()
-                  .domain([xAxisMin, xAxisMax - 1])
-                  .range([0, master[id].width]))
-                .orient("top"))
-                .selectAll("text")
-                .style("text-anchor", "end")
-                .attr("dx", "-.8em")
-                .attr("dy", "1.2em")
-                .attr("transform", function(d) {
-                   return "rotate(90)" 
-                   });
+		// pop the old data point off the front
+		if (master[id].data.length >= master[id].n + 1) {
+			// redraw the line, and slide it to the left
+			master[id].path
+			.attr("d", master[id].line)
+			.attr("transform", null)
+			.transition()
+			.duration(250)
+			.ease("linear")
+			.attr("transform", "translate(" + master[id].x(-0.1) + ", 0)");
+			// .each("end", tick);
+			xAxisMin += 1;
+			xAxisMax += 1;
+			
+			//redraws xAxis to increase
+			master[id].svg.selectAll("g.x.axis")
+			.call(d3.svg.axis().scale(
+			  d3.scale.linear()
+			  .domain([xAxisMin, xAxisMax - 1])
+			  .range([0, master[id].width]))
+			.orient("top"))
+			.selectAll("text")
+			.style("text-anchor", "end")
+			.attr("dx", "-.8em")
+			.attr("dy", "1.2em")
+			.attr("transform", function(d) {
+			   return "rotate(90)" 
+			   });
 
-        master[id].data.shift();
-    }
+			master[id].data.shift();
+		}
 
     }
 }
 
-master.tick = function (val, id) {
-    master[id].tick(val);
+master.tick = function (val, pid) {
+    //master[pid].tick(val);
+    
+    // push a new data point onto the back
+    // data.push(random());
+    master[pid].data.push(val);
+
+    // redraw the line, and slide it to the left
+    master[pid].path
+    .attr("d", master[pid].line)
+    .attr("transform", null)
+    .transition()
+    .duration(250)
+    .ease("linear")
+    .attr("transform", "translate(" + master[pid].x(-0.1) + ", 0)");
+    // .each("end", tick);
+
+    // pop the old data point off the front
+    if (master[pid].data.length >= master[pid].n + 1) {
+		// redraw the line, and slide it to the left
+		master[pid].path
+		.attr("d", master[id].line)
+		.attr("transform", null)
+		.transition()
+		.duration(250)
+		.ease("linear")
+		.attr("transform", "translate(" + master[pid].x(-0.1) + ", 0)");
+		// .each("end", tick);
+		xAxisMin += 1;
+		xAxisMax += 1;
+		
+		//redraws xAxis to increase
+		master[pid].svg.selectAll("g.x.axis")
+		.call(d3.svg.axis().scale(
+		  d3.scale.linear()
+		  .domain([xAxisMin, xAxisMax - 1])
+		  .range([0, master[pid].width]))
+		.orient("top"))
+		.selectAll("text")
+		.style("text-anchor", "end")
+		.attr("dx", "-.8em")
+		.attr("dy", "1.2em")
+		.attr("transform", function(d) {
+		   return "rotate(90)" 
+		   });
+
+        master[pid].data.shift();
+    }
 }
