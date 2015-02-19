@@ -3,7 +3,7 @@ master = {};
 /*
 config example:
 
-config = {yMax : 40, xMax : 10, data : [], width : 500, height : 300, id : 0};
+config = {yMax : 40, xMax : 10, data : [1, 2, 3, 4, 5, 6, 7, 6, 5], width : 500, height : 300, id : 0}
 */
 master.init = function (config) {
 
