@@ -6,29 +6,29 @@ var numPrecision = 1;
 var gauge = function(container, configuration) {
     var that = {};
     var config = {
-        size						: 200,
-        clipWidth					: 200,
-        clipHeight					: 110,
-        ringInset					: 20,
-        ringWidth					: 20,
+        size                        : 200,
+        clipWidth                   : 200,
+        clipHeight                  : 110,
+        ringInset                   : 20,
+        ringWidth                   : 20,
         
-        pointerWidth				: 10,
-        pointerTailLength			: 5,
-        pointerHeadLengthPercent	: 0.9,
+        pointerWidth                : 10,
+        pointerTailLength           : 5,
+        pointerHeadLengthPercent    : 0.9,
         
-        minValue					: 0,
-        maxValue					: 10,
+        minValue                    : 0,
+        maxValue                    : 10,
         
-        minAngle					: -90,
-        maxAngle					: 90,
+        minAngle                    : -90,
+        maxAngle                    : 90,
         
-        transitionMs				: 750,
+        transitionMs                : 750,
         
-        majorTicks					: 5,
-        labelFormat					: d3.format(',g'),
-        labelInset					: 10,
+        majorTicks                  : 5,
+        labelFormat                 : d3.format(',g'),
+        labelInset                  : 10,
         
-        arcColorFn					: d3.interpolateHsl(d3.rgb('#99FF33'), d3.rgb('#CC3300'))
+        arcColorFn                  : d3.interpolateHsl(d3.rgb('#99FF33'), d3.rgb('#CC3300'))
     };
     var range = undefined;
     var r = undefined;
@@ -106,6 +106,8 @@ var gauge = function(container, configuration) {
         svg = d3.select('body')
         .append('div')
         .attr('id', container)
+        .attr('width', config.clipWidth)
+        .attr('height', config.clipHeight)       
         .append('svg:svg')
         .attr('class', 'gauge')
         .attr('width', config.clipWidth)
@@ -216,16 +218,16 @@ masterGauge.init = function (config) {
     masterGauge[id] = gauge('power-gauge', config);
                            masterGauge[id].render();
                            
-                           masterGauge[id].updateReadings = function () {
-                               // just pump in random data here...
-                               masterGauge[id].update(Math.random() * 10);
-                           }
+                           // masterGauge[id].updateReadings = function () {
+                           //     // just pump in random data here...
+                           //     masterGauge[id].update(Math.random() * 10);
+                           // }
                            
                            // every few seconds update reading values
-                           masterGauge[id].updateReadings();
-                           setInterval(function() {
-                                       masterGauge[id].updateReadings();
-                                       }, 5 * 1000);
+                           // masterGauge[id].updateReadings();
+                           // setInterval(function() {
+                           //             masterGauge[id].updateReadings();
+                           //             }, 5 * 1000);
 }
 
 // if ( !window.isLoaded ) {
@@ -237,3 +239,7 @@ masterGauge.init = function (config) {
 //     alert("else");
 //     onDocumentReady();
 // }
+
+masterGauge.update = function (val, id) {
+    masterGauge[id].update(val);   
+}
