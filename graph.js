@@ -3,7 +3,7 @@ master = {};
 /*
 config example:
 
-config = {yMax : 40, xMax : 10, data : [1, 2, 3, 4, 5, 6, 7, 6, 5], width : 500, height : 300, id : 0}
+config = {yMax : 40, xMax : 10, data : [1, 2, 3, 4, 5, 6, 7, 6, 5], idata: [0, 1, 2, 3, 4, 5, 6, 7, 8], width : 500, height : 300, id : 0}
 */
 master.init = function (config) {
 
@@ -23,6 +23,12 @@ master.init = function (config) {
     d3.range(master[id].n);
 
     master[id].data = data;
+    master[id].idata = config.idata;
+
+    if (master[id].data === undefined || master[id].idata === undefined) {
+        alert('Both data and idata must be defined');
+    }
+
     // if (data === undefined) {
     //     master[id].data = d3.range(master[id].n).map(master[id].random);
     // }
@@ -33,7 +39,7 @@ master.init = function (config) {
     master[id].height = config.height === undefined ? 300 : config.height;
 
     master[id].x = d3.scale.linear()
-    .domain([0, master[id].n - 1])
+    .domain([master[id].n - 1, 0])
     .range([0, master[id].width]);
 
     master[id].y = d3.scale.linear()
@@ -41,7 +47,7 @@ master.init = function (config) {
     .range([master[id].height, 0]);
 
     master[id].line = d3.svg.line()
-    .x(function(d, i) { return master[id].x(i); })
+    .x(function(d, i) { return master[id].x(master[id].idata[i]); })
     .y(function(d, i) { return master[id].y(d); });
 
     master[id].svg = d3.select("body").append("svg").attr("id", id)
@@ -88,21 +94,21 @@ master.init = function (config) {
 
 }
 
-master.tick = function (val, pid) {
+master.tick = function (val, time, pid) {
     //master[pid].tick(val);
     
     // push a new data point onto the back
     // data.push(random());
     master[pid].data.push(val);
-
+    master[pid].idata.push(time);
     // redraw the line, and slide it to the left
     master[pid].path
-    .attr("d", master[pid].line)
-    .attr("transform", null)
-    .transition()
-    .duration(250)
-    .ease("linear")
-    .attr("transform", "translate(" + master[pid].x(-0.1) + ", 0)");
+    .attr("d", master[pid].line);
+    // .attr("transform", null)
+    // .transition()
+    // .duration(250)
+    // .ease("linear")
+    // .attr("transform", "translate(" + master[pid].x(-0.1) + ", 0)");
     // .each("end", tick);
 
     // pop the old data point off the front
