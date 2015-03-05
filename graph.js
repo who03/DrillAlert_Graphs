@@ -14,7 +14,8 @@ master.init = function (config) {
     yMax = config.yMax;
     xMax = config.xMax;
 
-    var xAxisMin = 0, xAxisMax = yMax;
+    master[id].xAxisMin = 0; 
+    master[id].xAxisMax = yMax;
     data = config.data;
     // n = domain max for y axis
     master[id].n = yMax;
@@ -44,7 +45,7 @@ master.init = function (config) {
     .y(function(d, i) { return master[id].y(d); });
 
     master[id].svg = d3.select("body").append("svg").attr("id", id)
-    .attr("width", 300 + master[id].margin.left + master[id].margin.right)
+    .attr("width", master[id].height + master[id].margin.left + master[id].margin.right)
     .attr("height", master[id].width + master[id].margin.top + master[id].margin.bottom)
     .append("g")
     .attr("transform", "translate(" + master[id].margin.left + "," + master[id].width + "), rotate(-90)");
@@ -115,14 +116,14 @@ master.tick = function (val, pid) {
 		.ease("linear")
 		.attr("transform", "translate(" + master[pid].x(-0.1) + ", 0)");
 		// .each("end", tick);
-		xAxisMin += 1;
-		xAxisMax += 1;
+		master[pid].xAxisMin += 1;
+		master[pid].xAxisMax += 1;
 		
 		//redraws xAxis to increase
 		master[pid].svg.selectAll("g.x.axis")
 		.call(d3.svg.axis().scale(
 		  d3.scale.linear()
-		  .domain([xAxisMin, xAxisMax - 1])
+		  .domain([master[pid].xAxisMin, master[pid].xAxisMax - 1])
 		  .range([0, master[pid].width]))
 		.orient("top"))
 		.selectAll("text")
