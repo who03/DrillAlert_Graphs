@@ -1,9 +1,20 @@
+/**
+ * master is an object that contains all the graphing logic to create and update plots.
+ * master has 2 main functions--init and tick--which creates and updates a plot respectively.
+ */
 master = {};
 
-/*
-config example:
-
-config = {yMax : 40, xMax : 10, data : [1, 2, 3, 4, 5, 6, 7, 6, 5], idata: [0, 1, 2, 3, 4, 5, 6, 7, 8], width : 500, height : 300, id : 0}
+/**
+ * master.init takes in a config object --> master.init(config)
+ *  where config contains the information needed to create a plot
+ * 
+ * config example: 
+ * config = {yMax : 40, 
+ *           xMax : 10, 
+ *           data : [1, 2, 3, 4, 5, 6, 7, 6, 5], 
+ *           width : 500, 
+ *           height : 300, 
+ *           id : 0}
 */
 master.init = function (config) {
 
@@ -50,18 +61,21 @@ master.init = function (config) {
     .x(function(d, i) { return master[id].x(master[id].idata[i]); })
     .y(function(d, i) { return master[id].y(d); });
 
+    // Creating the svg for the plots
     master[id].svg = d3.select("body").append("svg").attr("id", id)
     .attr("width", master[id].height + master[id].margin.left + master[id].margin.right)
     .attr("height", master[id].width + master[id].margin.top + master[id].margin.bottom)
     .append("g")
     .attr("transform", "translate(" + master[id].margin.left + "," + master[id].width + "), rotate(-90)");
 
+    // Creating the clipPath
     master[id].svg.append("defs").append("clipPath")
     .attr("id", "clip")
     .append("rect")
     .attr("width", master[id].width)
     .attr("height", master[id].height);
 
+    // Creating the x axis and making it pretty
     master[id].svg.append("g")
     .attr("class", "x axis")
     .attr("transform", "translate(-25,0)")
@@ -70,10 +84,9 @@ master.init = function (config) {
     .style("text-anchor", "end")
     .attr("dx", "-.8em")
     .attr("dy", "1.2em")
-    .attr("transform", function(d) {
-    return "rotate(90)" 
-    });
+    .attr("transform", rotate90);
 
+    // Creating the y axis and making it pretty
     master[id].svg.append("g")
     .attr("class", "y axis")
     .call(d3.svg.axis().scale(master[id].y).orient("right"))
@@ -82,10 +95,9 @@ master.init = function (config) {
     .style("text-anchor", "end")
     .attr("dx", "-0.4em")
     .attr("dy", "-1.0em")
-    .attr("transform", function(d) {
-    return "rotate(90)" 
-    });
+    .attr("transform", rotate90);
 
+    // Adding the data specified in the config
     master[id].path = master[id].svg.append("g")
     .attr("clip-path", "url(#clip)")
     .append("path")
@@ -96,6 +108,9 @@ master.init = function (config) {
 
 }
 
+/**
+ * master.tick takes in a data point and an id referring to a created plot --> master.tick(data, id)
+ */
 master.tick = function (val, time, pid) {
     //master[pid].tick(val);
     
@@ -115,34 +130,39 @@ master.tick = function (val, time, pid) {
 
     // pop the old data point off the front
     if (time >= master[pid].n) {
-		// redraw the line, and slide it to the left
-		master[pid].path
-		.attr("d", master[id].line)
-		.attr("transform", null)
-		.transition()
-		.duration(250)
-		.ease("linear")
-		//.attr("transform", "translate(" + master[pid].x(-0.1) + ", 0)");
-		// .each("end", tick);
-		master[pid].xAxisMin += time - master[pid].n;
-		master[pid].xAxisMax += time - master[pid].n;
-		
-		//redraws xAxis to increase
-		master[pid].svg.selectAll("g.x.axis")
-		.call(d3.svg.axis().scale(
-		  d3.scale.linear()
-		  .domain([master[pid].xAxisMax - 1, master[pid].xAxisMin])
-		  .range([0, master[pid].width]))
-		.orient("top"))
-		.selectAll("text")
-		.style("text-anchor", "end")
-		.attr("dx", "-.8em")
-		.attr("dy", "1.2em")
-		.attr("transform", function(d) {
-		   return "rotate(90)" 
-		   });
+                // redraw the line, and slide it to the left
+                master[pid].path
+                .attr("d", master[id].line)
+                .attr("transform", null)
+                .transition()
+                .duration(250)
+                .ease("linear")
+                //.attr("transform", "translate(" + master[pid].x(-0.1) + ", 0)");
+                // .each("end", tick);
+                master[pid].xAxisMin += time - master[pid].n;
+                master[pid].xAxisMax += time - master[pid].n;
+                
+                //redraws xAxis to increase
+                master[pid].svg.selectAll("g.x.axis")
+                .call(d3.svg.axis().scale(
+                  d3.scale.linear()
+                  .domain([master[pid].xAxisMax - 1, master[pid].xAxisMin])
+                  .range([0, master[pid].width]))
+                .orient("top"))
+                .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", "1.2em")
+                .attr("transform", rotate90);
 
         master[pid].data.shift();
         master[pid].idata.shift();
     }
+}
+
+/**
+ *  Helper function used to help rotate certain elements 90 degrees
+ */
+function rotate90(d) {
+    return "rotate(90)";
 }
