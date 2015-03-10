@@ -64,7 +64,7 @@ master.init = function (config) {
 
     master[id].svg.append("g")
     .attr("class", "x axis")
-    .attr("transform", "translate(0,0)")
+    .attr("transform", "translate(-25,0)")
     .call(d3.svg.axis().scale(master[id].x).orient("top"))
     .selectAll("text")
     .style("text-anchor", "end")
@@ -76,11 +76,12 @@ master.init = function (config) {
 
     master[id].svg.append("g")
     .attr("class", "y axis")
-    .call(d3.svg.axis().scale(master[id].y).orient("left"))
+    .call(d3.svg.axis().scale(master[id].y).orient("right"))
+    .attr("transform", "translate("+ (master[id].width-25) +")")
     .selectAll("text")
     .style("text-anchor", "end")
-    .attr("dx", "1.3em")
-    .attr("dy", "1.5em")
+    .attr("dx", "-0.4em")
+    .attr("dy", "-1.0em")
     .attr("transform", function(d) {
     return "rotate(90)" 
     });
@@ -90,7 +91,8 @@ master.init = function (config) {
     .append("path")
     .datum(master[id].data)
     .attr("class", "line")
-    .attr("d", master[id].line);
+    .attr("d", master[id].line)
+    .attr("transform", "translate(-25,0)");
 
 }
 
@@ -112,7 +114,7 @@ master.tick = function (val, time, pid) {
     // .each("end", tick);
 
     // pop the old data point off the front
-    if (master[pid].data.length >= master[pid].n + 1) {
+    if (time >= master[pid].n) {
 		// redraw the line, and slide it to the left
 		master[pid].path
 		.attr("d", master[id].line)
@@ -120,16 +122,16 @@ master.tick = function (val, time, pid) {
 		.transition()
 		.duration(250)
 		.ease("linear")
-		.attr("transform", "translate(" + master[pid].x(-0.1) + ", 0)");
+		//.attr("transform", "translate(" + master[pid].x(-0.1) + ", 0)");
 		// .each("end", tick);
-		master[pid].xAxisMin += 1;
-		master[pid].xAxisMax += 1;
+		master[pid].xAxisMin += time - master[pid].n;
+		master[pid].xAxisMax += time - master[pid].n;
 		
 		//redraws xAxis to increase
 		master[pid].svg.selectAll("g.x.axis")
 		.call(d3.svg.axis().scale(
 		  d3.scale.linear()
-		  .domain([master[pid].xAxisMin, master[pid].xAxisMax - 1])
+		  .domain([master[pid].xAxisMax - 1, master[pid].xAxisMin])
 		  .range([0, master[pid].width]))
 		.orient("top"))
 		.selectAll("text")
@@ -141,5 +143,6 @@ master.tick = function (val, time, pid) {
 		   });
 
         master[pid].data.shift();
+        master[pid].idata.shift();
     }
 }
