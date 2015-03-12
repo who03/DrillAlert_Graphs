@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.17.1.css">
     <style>
   
 
@@ -41,11 +44,17 @@
             fill: #666;
         }   
     </style>
+</head>
     <body>
+        <div id="qunit"></div>
+        <div id="qunit-fixture"></div>
         <script src="d3.min.js"></script>
-        <script src="unit.js"></script>
-        <script src="graph.js" type="text/javascript"></script>
-        <script src="http://requirejs.org/docs/release/2.1.11/minified/require.js"></script>
-        <script src="plotTest.js" type="text/javascript"></script>
-
+        <script src="http://code.jquery.com/qunit/qunit-1.17.1.js"></script>
+        <script src="blanket.js"></script>
+        <script data-cover src="graph.js"></script>
+        <script src="plotTest.js"></script>
+        
+        <script data-cover src="gauge.js"></script>
+        <script src="gaugeTest.js"></script>
     </body>
+</html>
