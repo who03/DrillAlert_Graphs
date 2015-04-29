@@ -30,7 +30,7 @@ master.init = function (config) {
     // n = max amount of data to be displayed on the y axis (domain max for y axis)
     master[id].n = yMax;
     master[id].random = d3.random.normal(xMax/2, .2);
-    d3.range(master[id].n);
+    //d3.range(master[id].n);
 
     master[id].data = data;
     master[id].idata = config.idata;
@@ -101,6 +101,14 @@ master.init = function (config) {
     .attr("dx", "-0.4em")
     .attr("dy", "-1.0em")
     .attr("transform", rotate90);
+
+    // Base rectangle of plot (used for dragging?)
+    master[id].svg.append("g")
+    .append("rect")
+    .attr("id", "base")
+    .attr("width", master[id].width)
+    .attr("height", master[id].height)
+    .attr("transform", "translate(-25,0)")
 
     // Creating the clipPath
     master[id].svg.append("clipPath")
