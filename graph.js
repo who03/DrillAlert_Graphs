@@ -164,20 +164,27 @@ master.tick = function (val, time, pid) {
     // data.push(random());
     master[pid].data.push(val);
     master[pid].idata.push(time);
-
+    
+    // redraw the line, and slide it to the left
+    master[pid].path
+    .attr("d", master[pid].line);
+    
     // pop the old data point off the front
     if (time >= master[pid].n) {
-                //redraw the line, and slide it to the left
-                master[pid].path
-                .attr("d", master[pid].line);
-                
-                //Change the size of current data for drag to increase
-                master[pid].xAxisMax = d3.max(master[pid].idata);
+        //Change the size of current data for drag to increase
+        master[pid].xAxisMax = d3.max(master[pid].idata);
     }
-    else {
-        // redraw the line, and slide it to the left
-        master[pid].path
-        .attr("d", master[pid].line);
+}
+
+/**
+ * master.tickBulk takes in arrays of data and updates it to the plot 
+ * as opposed to master.tick, which updates the plot one point at a time
+ */
+master.tickBulk = function (vals, times, pid) {
+    if (vals.length == times.length) {
+        for (i=0; i<vals.length; i++) {
+            master.tick(vals[i], times[i], pid);
+        }
     }
 }
 
