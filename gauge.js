@@ -171,6 +171,12 @@ var gauge = function(container, configuration) {
         }
         var ratio = scale(newValue);
         var newAngle = config.minAngle + (ratio * range);
+        if (newAngle > config.maxAngle) {
+            newAngle = config.maxAngle;
+        }
+        else if (newAngle < config.minAngle) {
+            newAngle = config.minAngle;
+        }
         pointer.transition()
         .duration(config.transitionMs)
         .ease('elastic')
