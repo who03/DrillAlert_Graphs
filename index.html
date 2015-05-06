@@ -3,6 +3,10 @@
     <style>
   
 
+        body {
+            height: 90%;
+        }
+
         svg {
             font: 10px sans-serif;
         }
@@ -21,24 +25,37 @@
         }
 
         #power-gauge{
-            float: left;
-            margin-right: 15px;
+            overflow: visible;
+            display: inline-block;
+
         }
         
+        #power-gauge svg.gauge {
+            overflow: visible;
+            display: inline-block;
+            margin: auto;
+        }
+
         #power-gauge g.arc {
             fill: steelblue;
+            overflow: visible;
+            display: inline-block;
         }
 
         #power-gauge g.pointer {
             fill: #e85116;
             stroke: #b64011;
+            overflow: visible;
+            display: inline-block;
         }
         
         #power-gauge g.label text {
             text-anchor: middle;
-            font-size: 14px;
+            font-size: 48px;
             font-weight: bold;
             fill: #666;
+            overflow: visible;
+            display: inline-block;
         }   
         
         #base {
@@ -46,9 +63,16 @@
         }
 
     </style>
+
     <body>
         <script src="d3.min.js"></script>
+            <script>
+        d3.select('body')
+            .append('div')
+            .text(screen.availHeight);
+    </script>
         <script src="graph.js" type="text/javascript"></script>
         <script src="gauge.js" type="text/javascript"></script>
-
+        <script src="labels.js" type="text/javascript"></script>
+        <div>window.devicePixelRatio<div>
     </body>
