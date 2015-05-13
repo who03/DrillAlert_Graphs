@@ -23,6 +23,7 @@ master.init = function (config) {
 
     master[id] = {};
 
+    var resolutionRatio = window.devicePixelRatio;
     yMax = config.yMax;
     xMax = config.xMax;
 
@@ -48,8 +49,8 @@ master.init = function (config) {
 
     master[id].margin = {top: 20, right: 20, bottom: 20, left: 40};
     
-    master[id].width = config.width === undefined ? 500 : config.width;
-    master[id].height = config.height === undefined ? 300 : config.height;
+    master[id].width = config.width === undefined ? 500 * resolutionRatio : config.width * resolutionRatio;
+    master[id].height = config.height === undefined ? 300 * resolutionRatio: config.height * resolutionRatio;
 
     master[id].x = d3.scale.linear()
     .domain([master[id].n - 1, 0])
@@ -165,7 +166,7 @@ master.tick = function (val, time, pid) {
     master[pid].data.push(val);
     master[pid].idata.push(time);
     
-    // redraw the line, and slide it to the left
+    // redraw the line
     master[pid].path
     .attr("d", master[pid].line);
     
