@@ -13,6 +13,10 @@ config = {
 */
 var masterLabel = {};
 
+function nameValueString(name, value) {
+        return '<div style="width: 350px;">' + name + ': ' + value + '</div>';
+}
+
 masterLabel.init = function initLabel(config) {
 
         var id = config.id;
@@ -35,17 +39,25 @@ masterLabel.init = function initLabel(config) {
                 .attr('y', 100)
                 .style('fill', 'none')
                 .attr('stroke', 'black')
-        masterLabel[id].text = masterLabel[id].g.append('foreignObject')
+        masterLabel[id].body = masterLabel[id].g.append('foreignObject')
                 .attr('x', 50)
                 .attr('y', 130)
                 .attr('width', 150)
                 .attr('height', 100)
-                .append("xhtml:body")
-                .html('<div style="width: 350px;">' + config.name + ': ' + config.value + '</div>')
+                .append("xhtml:body");
+        masterLabel[id].text = masterLabel[id].body
+                .html(nameValueString(config.name, config.value))
 
         masterLabel[id].g.transition().duration(500).attr("transform" ,"scale(1)");
 }
 
+masterLabel.addDiv = function(id) {
+    var config = masterLabel[id];        
+    masterLabel[id].body.append('div')
+        .html(nameValueString(config.name, config.value));
+}
+
 masterLabel.update = function(val, id) {
-    masterLabel[id].text.html(val);
+    var config = masterLabel[id];
+    masterLabel[id].text.html(nameValueString(config.name, val));
 }
