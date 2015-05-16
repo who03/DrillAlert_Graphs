@@ -14,7 +14,7 @@ config = {
 var masterLabel = {};
 
 function nameValueString(name, value) {
-        return '<div style="width: 350px;">' + name + ': ' + value + '</div>';
+        return name + ': ' + value;
 }
 
 masterLabel.init = function initLabel(config) {
@@ -25,6 +25,7 @@ masterLabel.init = function initLabel(config) {
         masterLabel[id].value = config.value;
         masterLabel[id].nameList = config.nameList;
         masterLabel[id].valueList = config.valueList;
+
 
         body = d3.select('body')
 
@@ -45,19 +46,30 @@ masterLabel.init = function initLabel(config) {
                 .attr('width', 150)
                 .attr('height', 100)
                 .append("xhtml:body");
-        masterLabel[id].text = masterLabel[id].body
-                .html(nameValueString(config.name, config.value))
 
         masterLabel[id].g.transition().duration(500).attr("transform" ,"scale(1)");
+
+        addNames(id);
 }
 
-masterLabel.addDiv = function(id) {
+function addNames(id) {
+        var name, value;
+        for (var i = 0; i < masterLabel[id].nameList.length; i++) {
+                name = masterLabel[id].nameList[i];
+                value = masterLabel[id].valueList[i];
+                masterLabel.addDiv(id, name, value);
+        }
+}
+
+masterLabel.addDiv = function(id, name, value) {
     var config = masterLabel[id];        
-    masterLabel[id].body.append('div')
-        .html(nameValueString(config.name, config.value));
+    masterLabel[id][name] = masterLabel[id].body.append('div').attr('style', 'width : 350px')
+        .attr('class', 'labelElement')
+        .attr('name', name);
+    masterLabel[id][name].html(nameValueString(name, value));
 }
 
-masterLabel.update = function(val, id) {
+masterLabel.update = function(id, name, value) {
     var config = masterLabel[id];
-    masterLabel[id].text.html(nameValueString(config.name, val));
+    masterLabel[id][name].html(nameValueString(name, value));
 }
