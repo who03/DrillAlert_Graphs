@@ -5,17 +5,17 @@
 master = {};
 
 /**
- * master.init takes in a config object --> master.init(config)
- *  where config contains the information needed to create a plot
- * 
- * config example: 
- * config = {yMax : 10, 
- *           xMax : 10, 
- *           data : [1, 2, 3, 4, 5,2,3,4,5,2,7,3,6,8], 
- *           idata: [0, 1, 2, 3, 4,5,6,7,8,9,10,11,12,13]
- *           width : 500, 
- *           height : 300, 
- *           id : 0}
+  master.init takes in a config object --> master.init(config)
+   where config contains the information needed to create a plot
+  
+  config example: 
+  config = {yMax : 10, 
+            xMax : 10, 
+            data : [1, 2, 3, 4, 5,2,3,4,5,2,7,3,6,8], 
+            idata: [0, 1, 2, 3, 4,5,6,7,8,9,10,11,12,13],
+            width : 500, 
+            height : 300, 
+            id : 0}
 */
 master.init = function (config) {
 
@@ -26,6 +26,7 @@ master.init = function (config) {
     var resolutionRatio = window.devicePixelRatio;
     yMax = config.yMax;
     xMax = config.xMax;
+    textBox = 50;
 
     data = config.data;
     // n = max amount of data to be displayed on the y axis (domain max for y axis)
@@ -74,12 +75,22 @@ master.init = function (config) {
     .x(function(d, i) { return master[id].x(master[id].idata[i]); })
     .y(function(d, i) { return master[id].y(d); });
 
-    // Creating the svg for the plots
-    master[id].svg = d3.select("body").append("svg").attr("id", id)
+    master[id].base = d3.select("body").append("svg").attr("id",id)
     .attr("width", master[id].height + master[id].margin.left + master[id].margin.right)
-    .attr("height", master[id].width + master[id].margin.top + master[id].margin.bottom)
+    .attr("height", master[id].width + master[id].margin.top + master[id].margin.bottom + textBox);
+    
+    master[id].label = master[id].base.append("svg").attr("id", id)
     .append("g")
-    .attr("transform", "translate(" + master[id].margin.left + "," + master[id].width + "), rotate(-90)");
+    .attr("transform", "translate("+ ((master[id].height + master[id].margin.left + master[id].margin.right)/2) + "," + (textBox/2) + ")")
+    .append("text")
+    .html("hello");
+    
+    // Creating the svg for the plots
+    master[id].svg = master[id].base.append("svg").attr("id", id)
+    .attr("width", master[id].height + master[id].margin.left + master[id].margin.right)
+    .attr("height", master[id].width + master[id].margin.top + master[id].margin.bottom + textBox)
+    .append("g")
+    .attr("transform", "translate(" + master[id].margin.left + "," + (master[id].width+textBox) + "), rotate(-90)");
 
     // Creating the x axis and making it pretty
     master[id].svg.append("g")
