@@ -9,35 +9,47 @@ master = {};
    where config contains the information needed to create a plot
   
   config example: 
-  config = {yMax : 10, 
+  config = {yMin: 0,
+            yMax : 10, 
+            xMin: 0,
             xMax : 10, 
             data : [1, 2, 3, 4, 5,2,3,4,5,2,7,3,6,8], 
             idata: [0, 1, 2, 3, 4,5,6,7,8,9,10,11,12,13],
             width : 500, 
             height : 300, 
+            title : "Inclination",
+            units : "deg/time",
+            titleSize : 20,
             id : 0}
 */
 master.init = function (config) {
 
-    id = config.id;
+    var id = config.id;
 
     master[id] = {};
 
-    var resolutionRatio = window.devicePixelRatio;
-    yMax = config.yMax;
-    xMax = config.xMax;
-    textBox = 50;
+    var resolutionRatio = window.devicePixelRatio || 1;
+    var fontSize = 12;
+    var labelSize = config.titleSize === undefined ? fontSize : config.titleSize;
+    var title = config.title === undefined ? "" : config.title; // Max char: ~40 or risk getting cut off
+    var titleLabel = config.units === undefined ? title : title + " (" + config.units + ")";
+    var yMin = config.yMin === undefined ? 0 : config.yMin;
+    var xMin = config.xMin === undefined ? 0 : config.xMin;
+    var yMax = config.yMax;
+    var xMax = config.xMax;
+    // Length of the title box height in px. Default = 50px
+    var textBox = config.textBox === undefined ? 50 * resolutionRatio : config.textBox * resolutionRatio;
 
-    data = config.data;
+    var data = config.data;
     // n = max amount of data to be displayed on the y axis (domain max for y axis)
-    master[id].n = yMax;
-    master[id].random = d3.random.normal(xMax/2, .2);
+    master[id].n = yMax - yMin + 1;
+    //master[id].random = d3.random.normal(xMax/2, .2);
     //d3.range(master[id].n);
 
     master[id].data = data;
     master[id].idata = config.idata;
 
-    master[id].xAxisMin = 0; 
+    master[id].xAxisMin = yMin; 
     master[id].xAxisMax = yMax >= d3.max(master[id].idata) ? yMax : d3.max(master[id].idata);
     
     if (master[id].data === undefined || master[id].idata === undefined) {
@@ -54,22 +66,24 @@ master.init = function (config) {
     master[id].height = config.height === undefined ? 300 * resolutionRatio: config.height * resolutionRatio;
 
     master[id].x = d3.scale.linear()
-    .domain([master[id].n - 1, 0])
+    .domain([yMax, yMin])
     .range([0, master[id].width]);
 
     master[id].y = d3.scale.linear()
-    .domain([xMax, 0])
+    .domain([xMax, xMin])
     .range([master[id].height, 0]);
 
     // Properties for x-axis (tick size, length, etc)
     master[id].xAxis = d3.svg.axis()
     .scale(master[id].x)
-    .orient("top");
+    .orient("top")
+    .tickSize(-master[id].height, 6 * resolutionRatio);
     
     // Properties for y-axis (tick size, length, etc)
     master[id].yAxis = d3.svg.axis()
     .scale(master[id].y)
-    .orient("right");
+    .orient("right")
+    .tickSize(-master[id].width, 6 * resolutionRatio);
 
     master[id].line = d3.svg.line()
     .x(function(d, i) { return master[id].x(master[id].idata[i]); })
@@ -81,9 +95,15 @@ master.init = function (config) {
     
     master[id].label = master[id].base.append("svg").attr("id", id)
     .append("g")
-    .attr("transform", "translate("+ ((master[id].height + master[id].margin.left + master[id].margin.right)/2) + "," + (textBox/2) + ")")
+    .attr("id", "textBox")
     .append("text")
-    .html("hello");
+    .attr("id", "topLabel")
+    .style("font-size", (labelSize * resolutionRatio) + "px")
+    .style("text-anchor", "middle")
+    .html(titleLabel);
+    
+    master[id].base.select("#textBox")
+    .attr("transform", "translate("+ ((master[id].height + master[id].margin.left + master[id].margin.right)/2) + "," + (textBox/2) + ")")
     
     // Creating the svg for the plots
     master[id].svg = master[id].base.append("svg").attr("id", id)
@@ -99,8 +119,9 @@ master.init = function (config) {
     .call(master[id].xAxis)
     .selectAll("text")
     .style("text-anchor", "end")
-    .attr("dx", "-.8em")
-    .attr("dy", "1.2em")
+    .style("font-size", (fontSize * resolutionRatio) +"px")
+    .attr("dx", (-.8 * resolutionRatio) + "em")
+    .attr("dy", (0.7 * resolutionRatio) + "em")
     .attr("transform", rotate90);
 
     // Creating the y axis and making it pretty
@@ -110,8 +131,9 @@ master.init = function (config) {
     .attr("transform", "translate("+ (master[id].width-25) +")")
     .selectAll("text")
     .style("text-anchor", "end")
-    .attr("dx", "-0.4em")
-    .attr("dy", "-1.0em")
+    .style("font-size", (fontSize * resolutionRatio) +"px")
+    .attr("dx", (0.1 * resolutionRatio)+"em")
+    .attr("dy", (-1.0 * resolutionRatio)+"em")
     .attr("transform", rotate90);
 
     // Base rectangle of plot (used for dragging?)
@@ -136,6 +158,7 @@ master.init = function (config) {
     .append("path")
     .datum(master[id].data)
     .attr("class", "line")
+    .style("stroke-width", (1.5 * resolutionRatio)+"px")
     .attr("d", master[id].line)
     .attr("transform", "translate(-25,0)");
 
@@ -160,8 +183,9 @@ master.init = function (config) {
                 .call(master[id].xAxis)
                 .selectAll("text")
                 .style("text-anchor", "end")
-                .attr("dx", "-.8em")
-                .attr("dy", "1.2em")
+                .style("font-size", (fontSize * resolutionRatio) +"px")
+                .attr("dx", (-.8 * resolutionRatio)+"em")
+                .attr("dy", (0.7 * resolutionRatio)+"em")
                 .attr("transform", rotate90);
         });
         
